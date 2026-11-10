@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>云计算运维 · 从零到就业学习路线</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%226%22%20fill%3D%22%2316202B%22%2F%3E%3Cpath%20d%3D%22M8%2011l6%205-6%205%22%20stroke%3D%22%237FD4C1%22%20stroke-width%3D%222.6%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2217.5%22%20y%3D%2220.5%22%20width%3D%229%22%20height%3D%222.6%22%20rx%3D%221.3%22%20fill%3D%22%237FD4C1%22%2F%3E%3C%2Fsvg%3E">
+<style>
+:root{
+  --paper:#F1F3F2;
+  --ink:#16202B;
+  --ink2:#4E5C66;
+  --line:#D5DBD8;
+  --line2:#E3E8E5;
+  --blue:#1B5A7D;
+  --teal:#2C7A6B;
+  --ochre:#8C6A17;
+  --mono:"JetBrains Mono","Cascadia Mono",Consolas,"Courier New",monospace;
+  --sans:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei","Source Han Sans SC","Noto Sans SC",sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 72px}
+
+/* ===== 顶部固定进度条 ===== */
+.bar{
+  position:sticky;top:0;z-index:20;background:var(--paper);
+  border-bottom:1px solid var(--line);padding:10px 0 9px;
+}
+.bar .wrap{padding-bottom:0}
+.bar-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bar-num{font-family:var(--mono);font-size:13px;color:var(--ink);white-space:nowrap}
+.bar-num em{font-style:normal;color:var(--ink2)}
+.track{flex:1;min-width:110px;height:6px;background:var(--line2);position:relative;overflow:hidden}
+.track i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--blue);transition:width .28s ease}
+.bar-act{display:flex;align-items:center;gap:14px;margin-left:auto}
+.switch{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);cursor:pointer;min-height:32px}
+.switch input{width:16px;height:16px;accent-color:var(--blue);cursor:pointer;margin:0}
+.btn{
+  font-family:var(--sans);font-size:12px;color:var(--ink2);background:transparent;
+  border:1px solid var(--line);padding:5px 11px;cursor:pointer;min-height:32px;
+  transition:border-color .15s,color .15s;
+}
+.btn:hover{border-color:var(--ink2);color:var(--ink)}
+.btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* ===== 页头 ===== */
+header{padding:34px 0 4px}
+.stamp{font-family:var(--mono);font-size:12px;color:var(--ink2);letter-spacing:.02em}
+h1{
+  font-size:27px;line-height:1.28;margin:10px 0 12px;font-weight:700;
+  letter-spacing:-.015em;
+}
+.lede{font-size:15px;color:var(--ink2);margin:0;max-width:34em}
+
+.stats{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);margin:24px 0 6px;
+}
+.stat{background:var(--paper);padding:11px 13px}
+.stat b{display:block;font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:-.02em;line-height:1.4}
+.stat span{font-size:12px;color:var(--ink2);line-height:1.5}
+
+/* ===== 起点 ===== */
+.base{
+  margin:28px 0 0;padding:16px 0 0;border-top:1px solid var(--line);
+  display:grid;grid-template-columns:1fr;gap:14px;
+}
+.base-col h3{font-size:13px;margin:0 0 6px;font-weight:600;color:var(--blue)}
+.base-col p{margin:0;font-size:13.5px;color:var(--ink2);line-height:1.7}
+.base-col p + p{margin-top:6px}
+
+/* ===== 阶段时间轴 ===== */
+.phase{padding:28px 0 4px;border-top:1px solid var(--line);margin-top:26px}
+.p-time{font-family:var(--mono);font-size:12px;color:var(--ink2);margin-bottom:6px;line-height:1.5}
+.p-axis{display:none}
+.p-body{min-width:0}
+.p-no{font-family:var(--mono);font-size:12px;color:var(--blue);letter-spacing:.02em}
+h2{font-size:20px;line-height:1.35;margin:3px 0 8px;font-weight:700;letter-spacing:-.01em}
+.p-count{font-family:var(--mono);font-size:11px;color:var(--ink2);margin-left:8px;font-weight:400;letter-spacing:0}
+.p-goal{
+  font-size:13.5px;color:var(--ink2);border-left:2px solid var(--line);
+  padding:2px 0 2px 11px;margin:0 0 14px;line-height:1.65;
+}
+.grp{margin-top:16px}
+.grp-h{
+  font-size:12.5px;font-weight:600;color:var(--blue);margin:0 0 2px;
+  font-family:var(--mono);letter-spacing:.01em;
+}
+
+/* ===== 条目 ===== */
+.item{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:8px 0;border-bottom:1px dashed var(--line2);cursor:pointer;
+  min-height:44px;transition:opacity .2s;
+}
+.item:last-child{border-bottom:0}
+.item input{
+  flex:none;width:19px;height:19px;margin:4px 0 0;cursor:pointer;
+  accent-color:var(--blue);
+}
+.item .tx{flex:1;min-width:0}
+.item .tx b{display:block;font-weight:600;font-size:15px;line-height:1.5;transition:color .2s}
+.item .tx small{display:block;font-size:12.5px;color:var(--ink2);line-height:1.6;margin-top:2px}
+.item.done{opacity:.5}
+.item.done .tx b{text-decoration:line-through;text-decoration-color:#9FA9A4}
+.hide-done .item.done{display:none}
+
+.verify{
+  margin:14px 0 4px;padding:11px 0 11px 12px;border-left:2px solid var(--teal);
+  font-size:13px;line-height:1.7;
+}
+.verify b{font-weight:600;color:var(--teal);display:block;margin-bottom:2px;font-size:12px;font-family:var(--mono);letter-spacing:.02em}
+
+/* ===== 里程碑（全页唯一重色块） ===== */
+.mile{
+  margin:32px 0 0;background:var(--ink);color:#E8EDEA;padding:22px 18px 18px;
+}
+.mile .m-tag{font-family:var(--mono);font-size:11.5px;color:#7FD4C1;letter-spacing:.04em}
+.mile h2{color:#F4F7F5;margin:6px 0 10px}
+.mile .m-lede{font-size:13.5px;color:#B9C6C0;margin:0 0 6px;line-height:1.7}
+.mile .m-lede strong{color:#E8EDEA;font-weight:600}
+.mile .p-count{color:#8FA39B}
+.mile .item{border-bottom:1px solid #26333D;padding:9px 0}
+.mile .item input{accent-color:#7FD4C1}
+.mile .item .tx b{color:#DDE5E1;font-size:14.5px}
+.mile .item .tx small{color:#93A69E}
+.mile .item.done{opacity:.42}
+.mile .item.done .tx b{text-decoration-color:#5C706A}
+.mile .why{
+  margin-top:16px;padding-top:12px;border-top:1px solid #26333D;
+  font-size:13px;color:#B9C6C0;line-height:1.75;
+}
+.mile .why b{color:#F4F7F5;font-weight:600}
+
+/* ===== 避坑 ===== */
+.pit{
+  margin:38px 0 0;padding:22px 0 4px;border-top:1px solid var(--line);
+}
+.pit h2{margin-bottom:12px}
+.pit ol{margin:0;padding:0;list-style:none;counter-reset:pit}
+.pit li{
+  counter-increment:pit;position:relative;padding:8px 0 8px 26px;
+  font-size:13.5px;line-height:1.7;color:var(--ink2);
+  border-bottom:1px dashed var(--line2);
+}
+.pit li::before{
+  content:counter(pit,decimal-leading-zero);position:absolute;left:0;top:9px;
+  font-family:var(--mono);font-size:11px;color:var(--ochre);
+}
+.pit li b{color:var(--ink);font-weight:600;display:block;font-size:14px;line-height:1.5}
+
+/* ===== 自检 ===== */
+.chk{
+  margin:26px 0 0;padding:18px 0 0;border-top:1px solid var(--line);
+}
+.chk h2{font-size:18px}
+.chk ul{margin:10px 0 0;padding:0;list-style:none}
+.chk li{
+  font-size:13.5px;color:var(--ink2);padding:7px 0 7px 18px;position:relative;
+  border-bottom:1px dashed var(--line2);line-height:1.65;
+}
+.chk li::before{
+  content:"";position:absolute;left:2px;top:14px;width:6px;height:6px;
+  background:var(--blue);
+}
+
+/* ===== 部署 ===== */
+.dep{
+  margin:34px 0 0;padding:22px 0 6px;border-top:1px solid var(--line);
+}
+.dep h2{margin-bottom:6px}
+.dep .d-note{font-size:13px;color:var(--ink2);margin:0 0 16px;line-height:1.7}
+.tier{margin-top:18px}
+.tier .t-h{
+  font-size:13px;font-weight:600;margin:0 0 6px;color:var(--ink);
+  display:flex;align-items:baseline;gap:8px;
+}
+.tier .t-h em{
+  font-style:normal;font-family:var(--mono);font-size:11px;color:var(--blue);
+}
+.tier p{font-size:13.5px;color:var(--ink2);margin:0 0 8px;line-height:1.7}
+.tier ol{margin:0;padding-left:20px;font-size:13.5px;color:var(--ink2);line-height:1.8}
+.tier ol li{margin-bottom:2px}
+.code{
+  font-family:var(--mono);font-size:12.5px;background:#E7ECE9;color:var(--ink);
+  padding:1px 5px;border:1px solid var(--line);word-break:break-all;
+}
+.tip{
+  margin-top:10px;font-size:12.5px;color:var(--ochre);line-height:1.65;
+  padding-left:10px;border-left:2px solid #E0D6BE;
+}
+
+footer{
+  margin-top:36px;padding-top:16px;border-top:1px solid var(--line);
+  font-size:12px;color:var(--ink2);line-height:1.7;
+}
+
+/* ===== 轻提示 ===== */
+#toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,10px);
+  background:var(--ink);color:#F4F7F5;font-size:13px;padding:9px 16px;
+  opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:40;
+}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ===== 宽屏 ===== */
+@media (min-width:640px){
+  .wrap{padding-left:24px;padding-right:24px}
+  body{font-size:16px}
+  h1{font-size:33px}
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .base{grid-template-columns:1fr 1fr;gap:22px}
+  .stat b{font-size:20px}
+}
+@media (min-width:768px){
+  .phase{display:grid;grid-template-columns:96px 22px minmax(0,1fr);column-gap:16px;align-items:start}
+  .p-time{text-align:right;padding-top:24px;margin-bottom:0}
+  .p-axis{display:block;position:relative;align-self:stretch}
+  .p-axis::before{
+    content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;
+    margin-left:-.5px;background:var(--line);
+  }
+  .p-axis .dot{
+    position:absolute;left:50%;top:24px;width:11px;height:11px;margin-left:-5.5px;
+    background:var(--blue);
+  }
+  h2{font-size:22px}
+  .mile{padding:26px 24px 22px}
+  .item .tx b{font-size:15.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="bar" aria-label="学习进度">
+  <div class="wrap">
+    <div class="bar-row">
+      <span class="bar-num"><span id="done">0</span> <em>/</em> <span id="total">0</span> <em>项完成</em></span>
+      <span class="track"><i id="track"></i></span>
+      <span class="bar-act">
+        <label class="switch"><input type="checkbox" id="hideDone">只看没做的</label>
+        <button class="btn" id="reset" type="button">清空进度</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<header>
+  <div class="stamp">2026.11 — 2028.06　云计算运维方向</div>
+  <h1>从零到就业：<br>一条线走完的学习清单</h1>
+  <p class="lede">不是让你多学几门新技术，是把散落的知识点收成一条能演示、能面试、能交付的线。勾选会自动保存，下次打开还在。</p>
+
+  <div class="stats">
+    <div class="stat"><b>4</b><span>个阶段</span></div>
+    <div class="stat"><b>42 周</b><span>到 2027 秋招</span></div>
+    <div class="stat"><b>2 个</b><span>证书（HCIA / HCIP）</span></div>
+    <div class="stat"><b>1 个</b><span>可交付项目</span></div>
+  </div>
+
+  <div class="base">
+    <div class="base-col">
+      <h3>你手上已经有的</h3>
+      <p>Linux 基础（RedHat 8）、AR2/AR4 静态路由、虚拟化的桥接与内网穿透、Docker 与 MySQL 容器部署、JDK 与 SpringBoot 的皮毛。</p>
+      <p>这不是零基础。这是知识点散着放，没连成线。</p>
+    </div>
+    <div class="base-col">
+      <h3>你真正缺的四样</h3>
+      <p>一，一个能跑起来的完整环境；二，一张能过简历筛选的证书；三，一段真实实习；四，一份讲得清细节的部署文档。</p>
+      <p>这四样补齐，简历就不空了。</p>
+    </div>
+  </div>
+</header>
+
+<!-- ===== 阶段 01 ===== -->
+<section class="phase">
+  <div class="p-time">2026.11 — 2027.02<br>约 14 周</div>
+  <div class="p-axis"><span class="dot"></span></div>
+  <div class="p-body">
+    <div class="p-no">阶段 01</div>
+    <h2>Linux 打地基<span class="p-count">0/21</span></h2>
+    <p class="p-goal">目标：给你一台空白虚拟机，两小时内配成能对外提供服务；中途报错，能自己定位到是哪一层。</p>
+
+    <div class="grp">
+      <div class="grp-h">A 装机与基础</div>
+      <label class="item"><input type="checkbox" data-id="k01"><span class="tx"><b>装一台 CentOS Stream 9 或 Rocky Linux 9</b><small>别只用老师发的现成镜像。自己装一遍，分区、用户、网络都手动选一次。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k02"><span class="tx"><b>建快照与克隆，坏了能一键回滚</b><small>练手必做。搞坏了不慌，是继续敢乱试的前提。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k03"><span class="tx"><b>看懂目录分工</b><small>/etc 放配置、/var 放日志与数据、/home 放用户。配 df -h、du -sh、lsblk 三个命令。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k04"><span class="tx"><b>文件查找别只会 ls</b><small>find 按名字、时间、大小查；locate 用索引查。真正干活时天天用。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k05"><span class="tx"><b>文本三件套：grep / sed / awk</b><small>grep 过滤日志、sed 批量替换配置、awk 取列做统计。这是排障的主力工具。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k06"><span class="tx"><b>权限：chmod 与 chown 吃透</b><small>数字写法 755 与符号写法 u+x 都要会；umask 是什么；sudo 和 wheel 组的关系。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k07"><span class="tx"><b>包管理：dnf 装、查、删</b><small>把软件源换成国内镜像，不然装个包要等很久。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k08"><span class="tx"><b>用户与组管理</b><small>useradd、usermod、passwd；能自己写一条 sudoers 规则。</small></span></label>
+    </div>
+
+    <div class="grp">
+      <div class="grp-h">B 进程与服务</div>
+      <label class="item"><input type="checkbox" data-id="k09"><span class="tx"><b>看清进程：ps aux 与 top</b><small>能找到是谁吃了 CPU、谁占了内存、哪个端口被谁监听。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k10"><span class="tx"><b>systemd：写一个自己的 .service</b><small>systemctl 的 start / stop / enable / status 四个子命令，加手写一个开机自启的单元文件。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k11"><span class="tx"><b>日志：journalctl 与 /var/log</b><small>journalctl -u 服务名 -f 追日志；说清 /var/log 下哪个文件是谁写的。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k12"><span class="tx"><b>定时任务 crontab</b><small>五个时间位的顺序别记错。挂一个每分钟执行的任务验证一下。</small></span></label>
+    </div>
+
+    <div class="grp">
+      <div class="grp-h">C 网络（这是你的主场）</div>
+      <label class="item"><input type="checkbox" data-id="k13"><span class="tx"><b>三条命令吃透：ip addr / ip route / ss -tulnp</b><small>每行输出什么意思都要讲得出。这是排网络问题的第一眼。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k14"><span class="tx"><b>配静态 IP，讲清四个概念</b><small>用 nmcli 或改 ifcfg 文件。IP、掩码、网关、DNS 各管什么，一句话说清。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k15"><span class="tx"><b>会算子网掩码</b><small>给 192.168.1.0/26，算出可用地址范围和广播地址。面试常考。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k16"><span class="tx"><b>防火墙 firewalld</b><small>开一个端口、关一个端口，理解 zone 是干什么的。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k17"><span class="tx"><b>SSH 加固</b><small>密钥免密登录、改默认端口、禁 root 直登；用 rsync 传文件。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k18"><span class="tx"><b>背下排障固定顺序</b><small>ping 通不通 → 路由对不对 → 端口开没开 → 防火墙拦没拦 → 日志说什么。顺序固定，别乱试。</small></span></label>
+    </div>
+
+    <div class="grp">
+      <div class="grp-h">D Shell 脚本</div>
+      <label class="item"><input type="checkbox" data-id="k19"><span class="tx"><b>Shell 语法过关</b><small>变量、$? 判断上条命令成败、if / for / while、函数。够用就行，不用学成专家。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k20"><span class="tx"><b>写一个巡检脚本</b><small>检查磁盘占用、内存、关键服务是否存活，最后输出一份能看的报告。这是运维岗最常写的第一个脚本。</small></span></label>
+      <label class="item"><input type="checkbox" data-id="k21"><span class="tx"><b>备份脚本 + crontab 挂上</b><small>每天凌晨 2 点备份指定目录，只保留最近 7 天，自动删旧的。跑通一次，看日志确认真的执行了。</small></span></label>
+    </div>
+
+    <div class="verify"><b>验收</b>两小时内，从空白系统做到：静态 IP 通外网、SSH 能登、防火墙开着、MySQL 能跑、备份脚本在跑。卡在哪里，就回去补哪一条。</div>
+  </div>
+</section>
+
+<!-- ===== 阶段 02 ===== -->
+<section class="phase">
+  <div class="p-time">2027.03 — 2027.06<br>约 16 周</div>
+  <div class="p-axis"><span class="dot"></span></div>
+  <div class="p-body">
+    <div class="p-no">阶段 02</div>
+    <h2>网络 + 拿下 HCIA<span class="p-count">0/9</span></h2>
+    <p class="p-goal">目标：考过 HCIA-Datacom，能在模拟器里搭出拓扑并排掉人为埋的故障。</p>
+
+    <label class="item"><input type="checkbox" data-id="k22"><span class="tx"><b>TCP/IP 基础</b><small>分层、三次握手为什么是三次、四次挥手为什么多一次。能讲清就是懂。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k23"><span class="tx"><b>子网划分专项练</b><small>连续算二十道，直到看到掩码能立刻反应出可用网段。这是网络岗的基本功。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k24"><span class="tx"><b>交换机：VLAN 与 Trunk</b><small>为什么要划 VLAN、Trunk 链路传什么、STP 存在是为了解决什么问题。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k25"><span class="tx"><b>静态路由补原理</b><small>你已经做过 AR2/AR4 的实验，这里补上"为什么这样配就通了"。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k26"><span class="tx"><b>OSPF 单区域</b><small>邻居怎么建立、开销怎么算、为什么企业里用它而不用静态。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k27"><span class="tx"><b>华为 VRP 命令行</b><small>display 命令体系、配置怎么保存、配错了怎么回滚。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k28"><span class="tx"><b>eNSP 做完整实验</b><small>三台路由器互联 + VLAN 隔离。做通之后，自己埋三个故障再逐个排掉。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k29"><span class="tx"><b>刷 HCIA-Datacom 题库</b><small>官方教材过一遍，题库正确率稳定在 85% 以上再去报名，别裸考。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k30"><span class="tx"><b>报名并考下 HCIA-Datacom</b><small>考试随时可约，费用以华为官网为准。考完把电子证书存好，简历要贴。</small></span></label>
+
+    <div class="verify"><b>验收</b>给一个画好的拓扑图，你能独立配通，并在三分钟内定位一个被故意改错的配置项。</div>
+  </div>
+</section>
+
+<!-- ===== 阶段 03 ===== -->
+<section class="phase">
+  <div class="p-time">2027.07 — 2027.08<br>约 8 周</div>
+  <div class="p-axis"><span class="dot"></span></div>
+  <div class="p-body">
+    <div class="p-no">阶段 03</div>
+    <h2>暑假冲刺 HCIP + 容器<span class="p-count">0/5</span></h2>
+    <p class="p-goal">目标：拿下 HCIP，同时把 Docker 和 K8s 从"会敲命令"变成"能自己搭起来"。这两个月是全年最值钱的时间。</p>
+
+    <label class="item"><input type="checkbox" data-id="k31"><span class="tx"><b>HCIP-Datacom 选一个方向</b><small>建议 Advanced Routing &amp; Switching，通用性更好。按考纲一条条过，别只刷题。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k32"><span class="tx"><b>OSPF 多区域、BGP 基础、MPLS 概念</b><small>HCIP 的重点。BGP 至少能说清它解决什么问题、和 OSPF 的区别。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k33"><span class="tx"><b>Docker 深化</b><small>自己写 Dockerfile（不是复制别人的）、卷挂载、网络模式、docker compose 编排两个服务。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k34"><span class="tx"><b>Kubernetes 起步</b><small>kubeadm 把单 master 装起来，能跑起一个 Pod，能 kubectl describe 看事件。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k35"><span class="tx"><b>报名并考下 HCIP</b><small>招聘里"具备 HCIP/HCIE"是明写的硬要求。这张证书值回票价。</small></span></label>
+
+    <div class="verify"><b>验收</b>能把"镜像 → 容器 → 集群"整条链讲完整，并独立把自己的 SpringBoot 打成镜像跑起来。</div>
+  </div>
+</section>
+
+<!-- ===== 里程碑 ===== -->
+<div class="mile">
+  <div class="m-tag">核心交付物</div>
+  <h2>一条龙部署：九步做出简历上唯一值钱的东西<span class="p-count">0/9</span></h2>
+  <p class="m-lede">面试官不看你学过什么，只看你<strong>做成过什么</strong>。这九步把 Linux、网络、Docker、Java、脚本一次性串起来，做完就有了能讲二十分钟的素材。</p>
+
+  <label class="item"><input type="checkbox" data-id="k36"><span class="tx"><b>01　装系统、配静态 IP</b><small>CentOS 9 干净安装，网络、时区、主机名都手动设。</small></span></label>
+  <label class="item"><input type="checkbox" data-id="k37"><span class="tx"><b>02　SSH 密钥登录</b><small>禁掉密码登录和 root 直连，只留密钥。这是运维的基本素养。</small></span></label>
+  <label class="item"><input type="checkbox" data-id="k38"><span class="tx"><b>03　装 MySQL 8</b><small>建库、建独立业务用户（不要用 root）、配好字符集。想过开远程前先想清安全。</small></span></label>
+  <label class="item"><input type="checkbox" data-id="k39"><span class="tx"><b>04　写一个最小 SpringBoot</b><small>一个接口，从库里读一条数据返回。别抄模板，自己写一遍才记得。</small></span></label>
+  <label class="item"><input type="checkbox" data-id="k40"><span class="tx"><b>05　打 jar、写 Dockerfile、构建镜像</b><small>分层写对，镜像别臃肿。这一步能讲出很多细节。</small></span></label>
+  <label class="item"><input type="checkbox" data-id="k41"><span class="tx"><b>06　跑容器、映射端口、看日志</b><small>服务起来后，用 docker logs 确认它在正常工作。</small></span></label>
+  <label class="item"><input type="checkbox" data-id="k42"><span class="tx"><b>07　装 Nginx 反代到容器</b><small>外部只暴露 80，请求转到容器端口。这一层做得对，安全性和扩展性都上来了。</small></span></label>
+  <label class="item"><input type="checkbox" data-id="k43"><span class="tx"><b>08　备份脚本 + crontab 挂上</b><small>定时备份数据库和配置，保留七天。别等数据丢了才想起这事。</small></span></label>
+  <label class="item"><input type="checkbox" data-id="k44"><span class="tx"><b>09　写部署文档 + 录三分钟演示</b><small>文档写清每一步为什么这么做、踩了什么坑怎么解决的。视频留给面试时放。</small></span></label>
+
+  <div class="why"><b>为什么这一步最重要</b><br>你之前学的每一样都是散的。做完这九步，它们变成一台能跑的系统、一份能拿出手的文档。这就是"学过"和"会"的分界线。</div>
+</div>
+
+<!-- ===== 阶段 04 ===== -->
+<section class="phase">
+  <div class="p-time">2027.09 — 2028.06</div>
+  <div class="p-axis"><span class="dot"></span></div>
+  <div class="p-body">
+    <div class="p-no">阶段 04</div>
+    <h2>实习与收尾<span class="p-count">0/4</span></h2>
+    <p class="p-goal">目标：拿到一段真实实习，让简历上除了证书还有经历。运维岗看实习，比看证书还重。</p>
+
+    <label class="item"><input type="checkbox" data-id="k45"><span class="tx"><b>九月开始投实习</b><small>简历带一条龙项目和两张证书。投运维、云平台、系统集成、驻场技术支持这几类。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k46"><span class="tx"><b>完整做满三个月以上</b><small>短期的没用。要能说出你负责了什么、解决过什么具体问题。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k47"><span class="tx"><b>建一本自己的故障手册</b><small>每排一个故障记一条：现象、怎么定位、根因、改法。半年后这就是你最值钱的东西。</small></span></label>
+    <label class="item"><input type="checkbox" data-id="k48"><span class="tx"><b>想升本就走正规渠道</b><small>查广东专升本的政策和报名时间，大三上是关键节点，别错过。</small></span></label>
+  </div>
+</section>
+
+<!-- ===== 避坑 ===== -->
+<div class="pit">
+  <h2>五个最容易踩的坑</h2>
+  <ol>
+    <li><b>别贪多</b>十个月只认这一条线。中途跑去学 AI、前端、爬虫，最后什么都半成品。</li>
+    <li><b>别停在低端运维</b>搬机器、插网线、值班是工资最低、最没成长的那一层。要往自动化、K8s、云平台建设走。</li>
+    <li><b>别造假学历</b>大厂背调必查，一次就全行业拉黑。想提升就走专升本或非全日制本科，这是合法路径。</li>
+    <li><b>别只看视频</b>看一遍等于没学。每条清单都要自己敲一遍，报错自己排一遍。</li>
+    <li><b>证书是敲门砖，实习才是硬通货</b>没有证书进不了面试，没有实习过了面试也留不住。</li>
+  </ol>
+</div>
+
+<!-- ===== 自检 ===== -->
+<div class="chk">
+  <h2>怎么判断自己"会了"</h2>
+  <ul>
+    <li>不查资料，能把原理讲清楚——讲不清就是没懂，只是背过。</li>
+    <li>报错时能自己定位到是哪一层出的问题，而不是从头乱试。</li>
+    <li>换一台空白机器，能独立复现出来，不依赖别人的现成环境。</li>
+    <li>能给别人讲明白，对方照着能做出来。</li>
+  </ul>
+</div>
+
+<!-- ===== 部署这个页面 ===== -->
+<div class="dep">
+  <h2>怎么把这个页面用起来</h2>
+  <p class="d-note">三种用法，从最省事到能分享。勾选进度存在你当前这台设备的浏览器里，换设备不会同步。</p>
+
+  <div class="tier">
+    <div class="t-h"><em>A</em>本地直接打开</div>
+    <p>双击这个 html 文件，浏览器就会打开。不需要联网，不需要装任何东西。进度自动保存，关掉再开还在。</p>
+  </div>
+
+  <div class="tier">
+    <div class="t-h"><em>B</em>放到手机上随时看</div>
+    <p>用微信"文件传输助手"把文件发到手机，保存后用手机浏览器打开。适合排队、通勤时翻一遍清单。</p>
+    <p class="tip">手机和电脑的勾选进度是分开记录的，不会互相同步。</p>
+  </div>
+
+  <div class="tier">
+    <div class="t-h"><em>C</em>挂到网上，有链接能分享</div>
+    <p>用 GitHub Pages 免费托管，得到一个 <span class="code">https://用户名.github.io/仓库名/</span> 的链接。</p>
+    <ol>
+      <li>注册 GitHub 账号，新建一个仓库，可见性选 Public。</li>
+      <li>上传这个 html 文件，并把它<strong>重命名为 <span class="code">index.html</span></strong>。这一步不做，打开会 404。</li>
+      <li>进仓库 Settings → Pages，Source 选 Deploy from a branch，Branch 选 main，目录选 / (root)，保存。</li>
+      <li>等一到两分钟，访问 <span class="code">https://你的用户名.github.io/仓库名/</span>。</li>
+    </ol>
+    <p class="tip">国内访问 GitHub Pages 有时会慢，打不开就换个网络或等一会儿。</p>
+  </div>
+</div>
+
+<footer>
+  清单按 2026 年 11 月的时间点排。日期节点到了就自己校准一次，别照着一份过期的计划硬走。<br>
+  证书考试费用、报名时间以华为官方培训与认证网站为准。
+</footer>
+
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var KEY = 'yunwei-roadmap-v1';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox][data-id]'));
+  var elDone = document.getElementById('done');
+  var elTotal = document.getElementById('total');
+  var elTrack = document.getElementById('track');
+  var saved = {};
+
+  try {
+    saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+  } catch (e) { saved = {}; }
+
+  boxes.forEach(function(b){
+    if (saved[b.getAttribute('data-id')]) { b.checked = true; }
+    b.addEventListener('change', function(){
+      saved[b.getAttribute('data-id')] = b.checked;
+      persist();
+      refresh();
+    });
+  });
+
+  function persist(){
+    try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+  }
+
+  function refresh(){
+    var done = 0;
+    boxes.forEach(function(b){
+      var item = b.closest('.item');
+      if (item) { item.classList.toggle('done', b.checked); }
+      if (b.checked) { done++; }
+    });
+
+    if (elDone) { elDone.textContent = done; }
+    if (elTotal) { elTotal.textContent = boxes.length; }
+    if (elTrack) {
+      var pct = boxes.length ? Math.round(done / boxes.length * 100) : 0;
+      elTrack.style.width = pct + '%';
+    }
+
+    document.querySelectorAll('.phase, .mile').forEach(function(sec){
+      var inner = sec.querySelectorAll('input[type=checkbox][data-id]');
+      var c = 0;
+      Array.prototype.slice.call(inner).forEach(function(b){ if (b.checked) { c++; } });
+      var label = sec.querySelector('.p-count');
+      if (label) { label.textContent = c + '/' + inner.length; }
+    });
+  }
+
+  function toast(msg){
+    var t = document.getElementById('toast');
+    if (!t) { return; }
+    t.textContent = msg;
+    t.classList.add('on');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(function(){ t.classList.remove('on'); }, 1800);
+  }
+
+  var resetBtn = document.getElementById('reset');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function(){
+      if (!window.confirm('清空全部勾选进度？清空后不能恢复。')) { return; }
+      saved = {};
+      persist();
+      boxes.forEach(function(b){ b.checked = false; });
+      refresh();
+      toast('进度已清空');
+    });
+  }
+
+  var hideBox = document.getElementById('hideDone');
+  if (hideBox) {
+    var hkey = KEY + '-hide';
+    try {
+      if (localStorage.getItem(hkey) === '1') {
+        hideBox.checked = true;
+        document.body.classList.add('hide-done');
+      }
+    } catch (e) {}
+    hideBox.addEventListener('change', function(){
+      document.body.classList.toggle('hide-done', hideBox.checked);
+      try { localStorage.setItem(hkey, hideBox.checked ? '1' : '0'); } catch (e) {}
+      if (hideBox.checked) { toast('已隐藏完成项'); } else { toast('已显示全部'); }
+    });
+  }
+
+  refresh();
+})();
+</script>
+</body>
+</html>
